@@ -1,18 +1,10 @@
-"""A scenario is plain data: what to track, what to push, how to scale the world,
-and what a seed may perturb. Every model edit lives in `robot_pg.robots`, which
-imports this package, never the reverse.
-
-References evaluate on integer ticks, so the reference a run publishes and the
-hold boundaries the Panda fail rule reads come from the same arithmetic.
-"""
-
 import importlib
 import itertools
 import math
 import pkgutil
 from collections.abc import Iterator, Mapping
 from dataclasses import asdict, dataclass, field
-from typing import Any, ClassVar
+from typing import Any, ClassVar, NamedTuple
 
 import numpy as np
 from numpy.typing import NDArray
@@ -64,12 +56,11 @@ class Path:
     def length(self) -> float:
         return sum(a.length for a in self.arcs)
 
-    def _starts(self) -> list[tuple[float, float, float, float]]:
-        """(s, x, y, heading) at the start of each arc."""
+    def _starts(self) -> list["_Start"]:
         s, x, y, th = 0.0, 0.0, 0.0, 0.0
         starts = []
         for arc in self.arcs:
-            starts.append((s, x, y, th))
+            starts.append(_Start(s, x, y, th))
             end = _arc_pose(x, y, th, arc.curvature, np.array(arc.length))
             x, y, th = (float(v) for v in end)
             s += arc.length
@@ -89,9 +80,7 @@ class Path:
 
     def nearest(self, xy: Array) -> tuple[Array, Array]:
         """For each point and each arc, the nearest arc length on that arc and the
-        distance to it, both (T, len(arcs)). The figure-8 crosses itself at the
-        origin, so a progress measure picks per row the candidate nearest its
-        previous arc length.
+        distance to it, both (T, len(arcs)).
         """
         xy = np.atleast_2d(np.asarray(xy, dtype=np.float64))
         s_out = np.empty((len(xy), len(self.arcs)))
@@ -133,6 +122,13 @@ class Path:
 
     def values(self, ticks: Ticks, dt: float) -> Array:
         return np.broadcast_to(self.polyline(), (len(ticks), PATH_POINTS, 2))
+
+
+class _Start(NamedTuple):
+    s: float
+    x: float
+    y: float
+    heading: float
 
 
 def _arc_pose(
@@ -242,9 +238,9 @@ class Push:
 
 @dataclass(frozen=True)
 class SeedSpace:
-    """What a nonzero seed may draw. The base moves only in x, y, and yaw, so no
-    seed starts a foot or a wheel inside the floor. `base_m` bounds the planar
-    offset, with dx and dy each within `base_m / sqrt(2)`.
+    """What a nonzero seed may draw. The base moves only in x, y, and yaw.
+    `base_m` bounds the planar offset, with dx and dy each within
+    `base_m / sqrt(2)`.
     """
 
     base_m: float = 0.05
@@ -321,14 +317,10 @@ class Scenario:
 
 
 def _tuple(v: Any) -> Any:
-    """JSON lists back to the tuples the frozen dataclasses hold."""
     return tuple(_tuple(x) for x in v) if isinstance(v, list | tuple) else v
 
 
 class _Registry(Mapping[str, Scenario]):
-    """Imports every module of this package on first use. Module
-    `diffdrive_figure8` defines `SCENARIO` named `diffdrive.figure8`."""
-
     def __init__(self) -> None:
         self._loaded: dict[str, Scenario] | None = None
 

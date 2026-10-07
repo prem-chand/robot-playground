@@ -1,5 +1,3 @@
-"""Copy the Panda folder from MuJoCo Menagerie at a pinned commit."""
-
 import shutil
 import subprocess
 import sys

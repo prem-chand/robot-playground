@@ -1,11 +1,3 @@
-"""Time each robot's model load, a bare `mj_step` loop, and `run()` on the same
-constant hold, interleaved. Exit 1 when `run` adds more than 60 us per step or a
-load takes more than 2 s.
-
-A position actuator holds its `home` ctrl, and a torque or velocity actuator
-holds 0 in both loops alike.
-"""
-
 import itertools
 import statistics
 import sys
@@ -38,8 +30,7 @@ class Hold:
         return self._out
 
 
-def hold(model: mujoco.MjModel) -> tuple[Graph, Array]:
-    """One output per run of actuators with the same unit, and the hold command."""
+def hold_home_positions(model: mujoco.MjModel) -> tuple[Graph, Array]:
     actuators = parse_model(model).actuators
     key = model.key_ctrl[model.key("home").id]
     command = np.array(
@@ -80,7 +71,7 @@ def main() -> int:
         start = time.perf_counter()
         model = robot.model()
         load = time.perf_counter() - start
-        graph, command = hold(model)
+        graph, command = hold_home_positions(model)
         ctrl = CtrlMap.of(parse_model(model).actuators).apply(command)
         b, r = [], []
         for _ in range(ROUNDS):

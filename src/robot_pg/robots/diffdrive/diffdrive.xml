@@ -2,7 +2,6 @@
   <!-- Explicit Euler at 2 ms cannot hold the wheel time constant of about 0.15 ms. -->
   <option timestep="0.002" integrator="implicitfast"/>
 
-  <!-- A low front view shows both wheels and the caster on the floor. -->
   <visual>
     <global azimuth="200" elevation="-4"/>
   </visual>

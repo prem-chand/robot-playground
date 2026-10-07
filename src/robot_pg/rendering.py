@@ -1,10 +1,3 @@
-"""Offscreen frames from qpos rows, and a PNG writer that needs no viz extra.
-
-No robot model has a camera, so a free camera at the model's own azimuth and
-elevation is fitted to the robot's geoms in the first frame and then follows
-the free body.
-"""
-
 import math
 import os
 import struct
@@ -19,29 +12,23 @@ from numpy.typing import NDArray
 from robot_pg.contract import Array
 
 Pixels = NDArray[np.uint8]
-SIZE = (480, 640)
 
 
-def frames(
-    model: mujoco.MjModel, qpos: Array, size: tuple[int, int] = SIZE
-) -> Iterator[Pixels]:
-    """One (height, width, 3) frame per row of `qpos`. Pass a model you own,
-    because this raises its offscreen buffer to `size`. The first frame of a
-    process can take about 12 s while GL starts."""
-    h, w = size
-    vis = model.vis.global_
-    vis.offheight, vis.offwidth = max(vis.offheight, h), max(vis.offwidth, w)
+def frames(model: mujoco.MjModel, qpos: Array) -> Iterator[Pixels]:
+    """One frame per row of `qpos`, at the model's offscreen buffer size."""
     data = mujoco.MjData(model)
-    renderer = mujoco.Renderer(model, h, w)
+    renderer = mujoco.Renderer(
+        model, model.vis.global_.offheight, model.vis.global_.offwidth
+    )
     try:
         data.qpos[:] = qpos[0]
         mujoco.mj_forward(model, data)
         cam = _fit(model, data)
-        offset = cam.lookat - _root(model, data)
+        offset = cam.lookat - _free_body_pos(model, data)
         for row in qpos:
             data.qpos[:] = row
             mujoco.mj_forward(model, data)
-            cam.lookat[:] = offset + _root(model, data)
+            cam.lookat[:] = offset + _free_body_pos(model, data)
             renderer.update_scene(data, camera=cam)
             yield renderer.render().copy()
     finally:
@@ -89,8 +76,7 @@ def _fit(model: mujoco.MjModel, data: mujoco.MjData) -> mujoco.MjvCamera:
     return cam
 
 
-def _root(model: mujoco.MjModel, data: mujoco.MjData) -> Array:
-    """The position of the first free body, or the origin for a fixed base."""
+def _free_body_pos(model: mujoco.MjModel, data: mujoco.MjData) -> Array:
     free = np.flatnonzero(model.jnt_type == mujoco.mjtJoint.mjJNT_FREE)
     if not free.size:
         return np.zeros(3)

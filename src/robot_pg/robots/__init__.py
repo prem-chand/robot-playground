@@ -1,12 +1,3 @@
-"""Everything that touches a robot model: the registry, the compiled model
-cache, the episode (robot, scenario, seed), and the fail rules.
-
-The compiled model of each robot is built once per process and never handed
-out. `RobotSpec.model()` and `Episode.model()` return copies, and
-`Episode.apply` writes every field it owns from the cached values, so applying
-twice equals applying once and no edit compounds across runs.
-"""
-
 import copy
 import functools
 import math
@@ -17,6 +8,7 @@ from typing import Literal
 
 import mujoco
 import numpy as np
+from numpy.typing import NDArray
 
 from robot_pg.contract import Array
 from robot_pg.plant import _FATAL, EE_SITE, HOME_KEY, parse_model
@@ -53,6 +45,11 @@ class Sample:
     base_offset: tuple[float, float, float]
     joint_offsets: tuple[float, ...]
     target_order: tuple[int, ...]
+
+    @classmethod
+    def nominal(cls, n_hinges: int, n_targets: int) -> "Sample":
+        """Seed 0 draws this, because `default_rng(0)` does not draw zeros."""
+        return cls(1.0, (0.0, 0.0, 0.0), (0.0,) * n_hinges, tuple(range(n_targets)))
 
 
 @dataclass(frozen=True)
@@ -91,8 +88,7 @@ class FailRule:
     def __call__(
         self, trajectory: Trajectory, episode: "Episode", since: int = 0
     ) -> Failure | None:
-        """The first failure at a tick at or after `since`, or None. The rule
-        reads only recorded signals, so it scores saved and synthetic runs."""
+        """The first failure at a tick at or after `since`, or None."""
         dt, n = trajectory.dt, len(trajectory)
         found: list[tuple[int, str]] = []
         if self.min_base_height_m is not None:
@@ -161,8 +157,7 @@ class RobotSpec:
     fail_rule: FailRule
 
     def model(self) -> mujoco.MjModel:
-        """A copy of the compiled model with no scenario applied. For the Panda
-        this is the payload-free model."""
+        """A copy of the compiled model with no scenario applied."""
         return copy.copy(_compiled(self))
 
     def episode(self, scenario: Scenario, seed: int) -> "Episode":
@@ -179,8 +174,8 @@ class RobotSpec:
     def qpos(self, signals: Mapping[str, Array]) -> Array:
         """(T, nq) qpos rebuilt from recorded signals: the free joint from
         `base_pos` and `base_quat`, and each actuated joint from `qpos_joints`.
-        A tendon sets each of its joints to the tendon length, which is exact for
-        the Panda fingers. Any other joint takes its `home` value."""
+        A tendon sets each of its joints to the tendon length. Any other joint
+        takes its `home` value."""
         m = _compiled(self)
         q_act = _need(signals, "qpos_joints")
         q = np.tile(m.key_qpos[_key(m)], (len(q_act), 1))
@@ -198,8 +193,6 @@ class RobotSpec:
 
 @dataclass(frozen=True)
 class Episode:
-    """One robot, one scenario, one seed, and what the seed drew."""
-
     robot: RobotSpec
     scenario: Scenario
     seed: int
@@ -224,9 +217,7 @@ class Episode:
 
     def apply(self, model: mujoco.MjModel) -> None:
         """Write friction, payload mass, and the `home` keyframe onto a model of
-        this robot, each from the compiled values. `MujocoPlant.reset` loads
-        `home`, so the offsets reach tick 0. Inertia stays unchanged, as
-        Appendix A measured the payload."""
+        this robot, each from the compiled values."""
         p = _compiled(self.robot)
         if (model.nq, model.ngeom, model.nbody) != (p.nq, p.ngeom, p.nbody):
             raise ValueError(f"model is not a {self.robot.name} model")
@@ -247,7 +238,7 @@ class Episode:
             )
             q[a + 3 : a + 7] = turned
         for j, offset in zip(
-            _hinges(self.robot), self.sample.joint_offsets, strict=True
+            _actuated_hinges(self.robot), self.sample.joint_offsets, strict=True
         ):
             q[p.jnt_qposadr[j]] += offset
         model.key_qpos[key] = q
@@ -271,8 +262,7 @@ def _free_joint(m: mujoco.MjModel) -> int | None:
 
 
 @functools.cache
-def _hinges(robot: RobotSpec) -> tuple[int, ...]:
-    """Hinge joints driven by an actuator, in actuator order."""
+def _actuated_hinges(robot: RobotSpec) -> tuple[int, ...]:
     m = _compiled(robot)
     return tuple(
         int(m.actuator_trnid[i, 0])
@@ -283,17 +273,11 @@ def _hinges(robot: RobotSpec) -> tuple[int, ...]:
 
 
 def _draw(robot: RobotSpec, scenario: Scenario, seed: int) -> Sample:
-    """Seed 0 is the nominal sample and touches no generator, because
-    `default_rng(0)` does not draw zeros. Any other seed draws one vector from
-    `default_rng(seed)`, in the order friction, dx, dy, yaw, then one value per
-    hinge, followed by the target permutation."""
-    hinges, m = _hinges(robot), _compiled(robot)
+    hinges, m = _actuated_hinges(robot), _compiled(robot)
     ref = scenario.reference
     n_targets = len(ref.points) if isinstance(ref, Targets) else 0
     if seed == 0:
-        return Sample(
-            1.0, (0.0, 0.0, 0.0), (0.0,) * len(hinges), tuple(range(n_targets))
-        )
+        return Sample.nominal(len(hinges), n_targets)
     space = scenario.seed_space
     rng = np.random.default_rng(seed)
     u = rng.uniform(-1.0, 1.0, 4 + len(hinges))
@@ -322,16 +306,14 @@ def _need(signals: Mapping[str, Array], name: str) -> Array:
     return signals[name]
 
 
-def _trunk_contact(trajectory: Trajectory, robot: RobotSpec, since: int) -> int | None:
-    """Contact is not recorded, so it is rebuilt from the recorded state: set
-    qpos, run `mj_kinematics` and `mj_collision`, and look for a base geom
-    touching the floor. A tick runs that only when some trunk geom's bounding
-    sphere reaches the floor, so a standing robot checks no tick."""
-    m = _compiled(robot)
-    base, floor = m.body(robot.base_body).id, m.geom("floor").id
-    trunk = np.flatnonzero(
-        (m.geom_bodyid == base) & ((m.geom_contype != 0) | (m.geom_conaffinity != 0))
-    )
+def _ticks_near_floor(
+    m: mujoco.MjModel,
+    trajectory: Trajectory,
+    since: int,
+    trunk: NDArray[np.intp],
+    floor: int,
+) -> NDArray[np.intp]:
+    """Ticks from `since` where some trunk geom's bounding sphere reaches the floor."""
     pos = _need(trajectory.signals, "base_pos")[since:]
     w, x, y, z = _need(trajectory.signals, "base_quat")[since:].T
     z_row = np.stack(
@@ -339,7 +321,16 @@ def _trunk_contact(trajectory: Trajectory, robot: RobotSpec, since: int) -> int 
     )
     center_z = pos[:, 2:3] + z_row @ m.geom_pos[trunk].T
     reach = m.geom_rbound[trunk] + m.geom_margin[trunk] + m.geom_margin[floor]
-    near = np.flatnonzero((center_z - reach < m.geom_pos[floor, 2]).any(axis=1))
+    return np.flatnonzero((center_z - reach < m.geom_pos[floor, 2]).any(axis=1))
+
+
+def _trunk_contact(trajectory: Trajectory, robot: RobotSpec, since: int) -> int | None:
+    m = _compiled(robot)
+    base, floor = m.body(robot.base_body).id, m.geom("floor").id
+    trunk = np.flatnonzero(
+        (m.geom_bodyid == base) & ((m.geom_contype != 0) | (m.geom_conaffinity != 0))
+    )
+    near = _ticks_near_floor(m, trajectory, since, trunk, floor)
     if not near.size:
         return None
     rows = {k: v[since:][near] for k, v in trajectory.signals.items()}
