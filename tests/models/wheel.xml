@@ -1,0 +1,12 @@
+<mujoco model="wheel">
+  <option timestep="0.002" integrator="implicitfast"/>
+  <worldbody>
+    <body name="wheel">
+      <joint name="axle" type="hinge" axis="0 1 0"/>
+      <geom type="cylinder" size="0.05 0.015" euler="90 0 0" mass="0.3"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <velocity name="wheel" joint="axle" kv="2" ctrlrange="-20 20"/>
+  </actuator>
+</mujoco>
