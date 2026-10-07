@@ -2,6 +2,11 @@
   <!-- Explicit Euler at 2 ms cannot hold the wheel time constant of about 0.15 ms. -->
   <option timestep="0.002" integrator="implicitfast"/>
 
+  <!-- A low front view shows both wheels and the caster on the floor. -->
+  <visual>
+    <global azimuth="200" elevation="-4"/>
+  </visual>
+
   <asset>
     <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
     <texture type="2d" name="grid" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
@@ -36,6 +41,6 @@
   </actuator>
 
   <keyframe>
-    <key name="home" qpos="0 0 0.05 1 0 0 0 0 0" ctrl="0 0"/>
+    <key name="home" qpos="0 0 0.0498 1 0 0 0 0 0" ctrl="0 0"/>
   </keyframe>
 </mujoco>
