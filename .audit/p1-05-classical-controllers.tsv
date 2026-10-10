@@ -1,0 +1,7 @@
+step	verdict	evidence	note
+2	VERIFIED	read plant.py signals, schedule.py slot contract, test_runtime.py, robots/__init__.py	controllers read plant signals by name; commands stay in actuator units
+3	VERIFIED	build drive() + Driver; unit Driver test; used by all closed-loop gates	slot spec rate 1/dt serves one row per tick, no explicit wires
+4	VERIFIED	test_joint_pd_outputs_the_exact_law, atol 1e-12 (float assoc miss at 1e-15)	exact kp*e - kd*v; unit guard rejects non-force outputs
+5	VERIFIED	diffdrive figure8 closed loop: max cross-track 0.039 -> 0.003 after the end-of-path stop; probe at /tmp/probe_fig8.py	follower stopped wheels at path end per Path contract; seed 4 run inside the 0.5 m fail rule
+6	VERIFIED	panda reach_grid closed loop: 27 holds, max end-of-hold error < 0.05 m (gate), fail_rule None	DLS step 2.0 damping 0.1 matches proto p_payload4
+7	VERIFIED	86 passed, ruff clean, pyright clean	full suite
