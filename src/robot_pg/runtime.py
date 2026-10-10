@@ -5,6 +5,7 @@ from numpy.typing import ArrayLike
 
 from robot_pg.contract import Array, Graph
 from robot_pg.plant import MujocoPlant, RunUnstable, check_command, parse_model
+from robot_pg.provenance import content_hash
 from robot_pg.schedule import GraphError, compile_graph
 from robot_pg.trajectory import Recorder, Trajectory
 
@@ -30,12 +31,14 @@ class Session:
         )
         check_command(graph, spec.actuators)
         self._graph, self._record, self._capacity = graph, tuple(record), capacity
+        self._seed = seed
         self.dt: float = model.opt.timestep
         self.reset(seed)
 
     def reset(self, seed: int) -> None:
         """Start a new episode. A `Trajectory` returned earlier keeps its rows."""
         self.plant.reset()
+        self._seed = seed
         self._schedule.reset(seed)
         self._recorder = Recorder(
             self._schedule.columns,
@@ -79,6 +82,7 @@ class Session:
             self._graph.command,
             self.plant.spec.actuators,
             self.plant.warnings(),
+            content_hash(self.plant.model, self._graph, self._seed),
         )
 
 

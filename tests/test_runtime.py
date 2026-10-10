@@ -23,6 +23,7 @@ class Pd:
 
     def __init__(self, target: float) -> None:
         self.target = target
+        self.digest = f"target {target}"
 
     def reset(self, seed: int) -> None: ...
 
@@ -34,6 +35,7 @@ class Pd:
 class Hold:
     def __init__(self, out: SignalSpec, value: list[float]) -> None:
         self.spec, self.value = BlockSpec(500, outputs=(out,)), np.array(value)
+        self.digest = f"value {value}"
 
     def reset(self, seed: int) -> None: ...
 

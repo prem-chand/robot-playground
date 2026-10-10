@@ -35,6 +35,7 @@ class Trajectory:
     command_names: tuple[str, ...]
     actuators: tuple[Actuator, ...]
     warnings: Mapping[str, int]
+    content: str = ""
 
     def __len__(self) -> int:
         return self.timing.shape[0]
@@ -68,6 +69,7 @@ class Trajectory:
             "command_names": list(self.command_names),
             "actuators": [asdict(a) for a in self.actuators],
             "warnings": dict(self.warnings),
+            "content": self.content,
         }
         arrays = {f"signal/{n}": a for n, a in self.signals.items()}
         tmp = dest.with_suffix(".tmp.npz")
@@ -104,6 +106,7 @@ class Trajectory:
             tuple(meta["command_names"]),
             actuators,
             meta["warnings"],
+            meta.get("content", ""),
         )
 
 
@@ -152,6 +155,7 @@ class Recorder:
         command_names: tuple[str, ...],
         actuators: tuple[Actuator, ...],
         warnings: Mapping[str, int],
+        content: str = "",
     ) -> Trajectory:
         n, rows = self.n, self._rows[: self.n]
         signals = {
@@ -162,5 +166,5 @@ class Recorder:
         for a in (*signals.values(), timing):
             a.flags.writeable = False
         return Trajectory(
-            dt, signals, timing, blocks, command_names, actuators, dict(warnings)
+            dt, signals, timing, blocks, command_names, actuators, dict(warnings), content
         )

@@ -21,6 +21,7 @@ class Hold:
     def __init__(self, *outputs: tuple[SignalSpec, list[float]]) -> None:
         self.spec = BlockSpec(500.0, outputs=tuple(s for s, _ in outputs))
         self.out = {s.name: np.array(v) for s, v in outputs}
+        self.digest = f"hold {[v for _, v in outputs]}"
 
     def reset(self, seed: int) -> None:
         pass
@@ -38,6 +39,7 @@ class JointPd:
             outputs=(SignalSpec("tau", (n,), "N m"),),
         )
         self.target = target
+        self.digest = f"target {target}"
 
     def reset(self, seed: int) -> None:
         pass

@@ -22,6 +22,7 @@ class Hold:
     def __init__(self, outputs: Mapping[SignalSpec, Array]) -> None:
         self.spec = BlockSpec(500.0, outputs=tuple(outputs))
         self._out = {s.name: v for s, v in outputs.items()}
+        self.digest = f"hold {sorted(self._out)}"
 
     def reset(self, seed: int) -> None:
         pass

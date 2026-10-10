@@ -11,6 +11,7 @@ REF, CMD = SignalSpec("ref", (1,)), SignalSpec("command", (1,))
 class Fn:
     def __init__(self, spec: BlockSpec) -> None:
         self.spec = spec
+        self.digest = "fn"
 
     def reset(self, seed: int) -> None:
         pass

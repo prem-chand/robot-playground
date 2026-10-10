@@ -23,6 +23,8 @@ uv run --extra dev ruff check
 uv run --extra dev pyright
 ```
 
-## Plan evidence
+## Replay
 
-[docs/plan-evidence/](docs/plan-evidence/) holds the survey reports and the prototype scripts and models that the Phase 1 plan cites.
+Every `Trajectory` carries a `content` hash. It covers the MuJoCo version, the full compiled model, the graph with each block's class, spec, and `digest`, and the seed. Two runs with the same hash replay bitwise on the same machine, except the wall-clock timing rows.
+
+## Plan evidence

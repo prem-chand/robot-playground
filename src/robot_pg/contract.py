@@ -40,10 +40,14 @@ class BlockSpec:
 
 
 class Block(Protocol):
-    """`inputs` are read-only views, valid only during the call."""
+    """`inputs` are read-only views, valid only during the call. `digest` names
+    the block's own config, so two blocks with the same spec hash apart.
+    """
 
     @property
     def spec(self) -> BlockSpec: ...
+    @property
+    def digest(self) -> str: ...
     def reset(self, seed: int) -> None: ...
     def step(self, inputs: Mapping[str, Array]) -> Mapping[str, ArrayLike]: ...
 
@@ -53,6 +57,10 @@ class External:
     """`Schedule.set_slot` fills this slot's outputs."""
 
     spec: BlockSpec
+
+    @property
+    def digest(self) -> str:
+        return "external"
 
 
 @dataclass(frozen=True)

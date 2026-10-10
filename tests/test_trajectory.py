@@ -14,6 +14,7 @@ TAU = SignalSpec("command", (1,), "N m")
 class Fn:
     def __init__(self, spec: BlockSpec, f) -> None:
         self.spec, self.f, self.n = spec, f, 0
+        self.digest = "fn"
 
     def reset(self, seed: int) -> None:
         self.n = 0
