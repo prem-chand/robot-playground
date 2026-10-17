@@ -25,10 +25,10 @@ def test_push_gives_its_impulse_as_horizontal_momentum():
 
 def test_latency_delays_the_action_by_whole_ticks():
     run = lab.rollout(
-        lab.load("cartpole"), lambda obs: np.array([obs["t"]]), 0.1, latency_s=0.01
+        lab.load("cartpole"), lambda obs: np.array([obs["t"] + 1.0]), 0.1, latency_s=0.01
     )
-    assert run.ctrl[:5, 0].tolist() == [0.0] * 5
-    assert run.ctrl[5:8, 0] == pytest.approx([0.0, 0.002, 0.004])
+    assert run.ctrl[:6, 0].tolist() == [1.0] * 6
+    assert run.ctrl[6:8, 0] == pytest.approx([1.002, 1.004])
 
 
 def test_rollout_stops_at_the_first_failure():

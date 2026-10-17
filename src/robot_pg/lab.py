@@ -75,9 +75,12 @@ def home(model: mujoco.MjModel) -> mujoco.MjData:
     return data
 
 
-def linearize(model: mujoco.MjModel, eps: float = 1e-6) -> tuple[Array, Array]:
-    """Discrete A and B of one physics step at `home`, by centered differences."""
-    data = home(model)
+def linearize(
+    model: mujoco.MjModel, data: mujoco.MjData | None = None, eps: float = 1e-6
+) -> tuple[Array, Array]:
+    """Discrete A and B of one physics step at `data`, or at `home`, by
+    centered differences."""
+    data = home(model) if data is None else data
     nx = 2 * model.nv + model.na
     a, b = np.zeros((nx, nx)), np.zeros((nx, model.nu))
     mujoco.mjd_transitionFD(model, data, eps, True, a, b, None, None)
@@ -100,8 +103,9 @@ def rollout(
     """Run from `home` (plus `qpos0` if given) and stop at the first failure.
 
     The policy runs every `control_dt` and its action reaches the plant
-    `latency_s` later. Before the first action arrives, the plant holds the
-    `home` ctrl. `obs_noise` adds Gaussian noise of that std to each named key.
+    `latency_s` later. Before the first action arrives, the plant holds that
+    first action, as if the policy had run at the start state for `latency_s`.
+    `obs_noise` adds Gaussian noise of that std to each named key.
     """
     dt = model.opt.timestep
     n = round(seconds / dt)
@@ -132,6 +136,8 @@ def rollout(
             for key, std in (obs_noise or {}).items():
                 obs[key] = obs[key] + rng.normal(0.0, std, np.shape(obs[key]))
             pending.append((k + delay, np.asarray(policy(obs), dtype=np.float64)))
+            if k == 0:
+                held = pending[0][1]
         while pending and pending[0][0] <= k:
             held = pending.popleft()[1]
         d.xfrc_applied[:] = 0.0
