@@ -21,6 +21,9 @@ dev = [
     "control>=0.10.2",
 ]
 viz = ["matplotlib", "imageio", "imageio-ffmpeg"]
+policy = [
+    "onnxruntime>=1.19,<1.20",
+]
 
 [project.scripts]
 robot-pg = "robot_pg.cli:main"
