@@ -14,7 +14,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff", "pyright"]
+dev = [
+    "pytest",
+    "ruff",
+    "pyright",
+    "control>=0.10.2",
+]
 viz = ["matplotlib", "imageio", "imageio-ffmpeg"]
 
 [project.scripts]
