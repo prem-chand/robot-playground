@@ -24,6 +24,11 @@ viz = ["matplotlib", "imageio", "imageio-ffmpeg"]
 policy = [
     "onnxruntime>=1.19,<1.20",
 ]
+rl = [
+    "gymnasium>=0.29",
+    "torch>=2.1",
+    "torch<2.3; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+]
 
 [project.scripts]
 robot-pg = "robot_pg.cli:main"
