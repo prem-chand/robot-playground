@@ -59,13 +59,13 @@ uv run --extra dev pyright
 | Path | Contents |
 |---|---|
 | `src/robot_pg/` | Blocks, controllers, scenarios, the rollout loop, replay and the CLI |
-| `src/robot_pg/robots/` | Robot models: cart-pole, the robot-playground-v0 cart-pole, diff-drive, Panda |
+| `src/robot_pg/robots/` | Robot models: cart-pole, the robot-playground-v0 cart-pole, diff-drive, Panda, Unitree G1 |
 | `experiments/<name>/` | One script, `NOTES.md`, results, plots and videos for each experiment |
 | `tests/` | Unit tests |
 
 ## Credits
 
-- The Panda model comes from [MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie).
+- The Unitree G1 and Panda models come from [MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie).
 - Each model folder keeps its license file and a `VENDORED.txt` with the source commit.
 
 ## License
@@ -75,3 +75,4 @@ The code is under the MIT license in [LICENSE](LICENSE). Each vendored model kee
 ## Next
 
 - Train the cart-pole PPO again from random starts with pushes, and run the same sweeps against the LQR.
+- Give the Unitree G1 a stand controller, and sweep the push to the fall point.

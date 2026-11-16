@@ -6,7 +6,7 @@ from pathlib import Path
 
 URL = "https://github.com/google-deepmind/mujoco_menagerie.git"
 SHA = "4d038b3feae26ec82b46a4d586379114012a8ac7"
-FOLDERS = ("franka_emika_panda",)
+FOLDERS = ("unitree_g1", "franka_emika_panda")
 DEST = Path(__file__).resolve().parent.parent / "src" / "robot_pg" / "robots"
 
 

@@ -65,6 +65,28 @@ def test_panda_gripper_takes_a_0_to_4_cm_command_and_the_ee_site_is_added_at_loa
     assert vendored.nsite == 0
 
 
+def test_vendored_g1_loads_standing_on_the_floor_with_its_license():
+    folder = ASSETS / "unitree_g1"
+    m = mujoco.MjModel.from_xml_path(str(folder / "scene.xml"))
+    assert (m.nq, m.nu, m.nkey) == (36, 29, 1)
+    assert [(a.kind, a.unit) for a in parse_model(m).actuators] == [
+        ("position", "rad")
+    ] * 29
+    d = mujoco.MjData(m)
+    mujoco.mj_resetDataKeyframe(m, d, m.key("stand").id)
+    mujoco.mj_forward(m, d)
+    assert d.body("pelvis").xpos[2] == pytest.approx(0.79)
+    assert (
+        (folder / "LICENSE")
+        .read_text()
+        .startswith("Copyright (c) 2016-2023 HangZhou YuShu")
+    )
+    assert (folder / "VENDORED.txt").read_text().splitlines()[1:] == [
+        "4d038b3feae26ec82b46a4d586379114012a8ac7",
+        "unitree_g1/",
+    ]
+
+
 def test_inspect_lists_kinds_and_base_signals(capsys: pytest.CaptureFixture[str]):
     assert main(["inspect", "diffdrive"]) == 0
     out = capsys.readouterr().out
