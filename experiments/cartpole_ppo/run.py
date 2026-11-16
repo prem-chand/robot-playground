@@ -46,17 +46,29 @@ def mlp(obs: np.ndarray) -> np.ndarray:
 def continuous(model: mujoco.MjModel) -> tuple[np.ndarray, np.ndarray]:
     """Continuous A and B from the velocity rows of the one-step map.
 
-    Under Euler, v' = v + dt * qacc, so those rows over dt are the acceleration
-    Jacobian. The position rows are the identity block, as in robot-playground.
+    MuJoCo's Euler step is v' = v + dt (M + dt D)^-1 f(q, v, u), with the joint
+    damping D implicit. So (I + dt M^-1 D) (A_d - I) / dt on those rows is the
+    exact acceleration Jacobian M^-1 df. The position rows are the identity
+    block, as in robot-playground.
     """
     a, b = lab.linearize(model)
     dt, nv = model.opt.timestep, model.nv
+    mass = np.zeros((nv, nv))
+    mujoco.mj_fullM(model, lab.home(model), mass)
+    implicit = np.eye(nv) + dt * np.linalg.solve(mass, np.diag(model.dof_damping))
     ac = np.zeros_like(a)
     ac[:nv, nv:] = np.eye(nv)
-    ac[nv:] = (a[nv:] - np.eye(2 * nv)[nv:]) / dt
+    ac[nv:] = implicit @ (a[nv:] - np.eye(2 * nv)[nv:]) / dt
     bc = np.zeros_like(b)
-    bc[nv:] = b[nv:] / dt
+    bc[nv:] = implicit @ b[nv:] / dt
     return ac, bc
+
+
+def b_exact(model: mujoco.MjModel) -> np.ndarray:
+    """M^-1 times the cart force direction, the true continuous B rows."""
+    mass = np.zeros((model.nv, model.nv))
+    mujoco.mj_fullM(model, lab.home(model), mass)
+    return np.linalg.solve(mass, np.array([[1.0], [0.0]]))
 
 
 def care_gain(model: mujoco.MjModel) -> np.ndarray:
@@ -171,11 +183,12 @@ def stays_up(ctl: str, scale: float, seed: int) -> float:
     return float(recovered(roll(CONTROLLERS[ctl], 15.0, seed, q0, model=scaled(scale))))
 
 
-def transfer(plant: str, seed: int) -> dict:
+def transfer(plant: str, seed: int, side: float | None = None) -> dict:
     """The PPO policy from a 0.05 rad release on `plant`, with its state and
-    force where |tilt| first passes 0.2 rad, the end of its training range."""
+    force where |tilt| first passes 0.2 rad, the end of its training range.
+    `side` None tilts toward the seed's push sign."""
     q0, sign, _ = draw(seed)
-    q0[1] = sign * 0.05
+    q0[1] = (sign if side is None else side) * 0.05
     policy = PeakOutput(ppo)
     run = roll(policy, 15.0, seed, q0, model=lab.load(plant))
     out = np.flatnonzero(np.abs(run.qpos[:, 1]) > 0.2)
@@ -184,7 +197,7 @@ def transfer(plant: str, seed: int) -> dict:
         i = int(out[0])
         edge = {"t (s)": float(run.t[i]), "tilt (rad)": round(float(run.qpos[i, 1]), 4),
                 "tiltdot (rad/s)": round(float(run.qvel[i, 1]), 4), "u (N)": round(float(run.ctrl[i, 0]), 4)}
-    return {"plant": plant, "seed": seed, "recovered": recovered(run), "failed_at": run.failed_at,
+    return {"plant": plant, "seed": seed, "tilt0 (rad)": float(q0[1]), "recovered": recovered(run), "failed_at": run.failed_at,
             "peak |tilt| (rad)": round(float(np.abs(run.qpos[:, 1]).max()), 4),
             "peak raw |u| (N)": round(policy.peak, 4), "at first |tilt| > 0.2 rad": edge}
 
@@ -327,6 +340,10 @@ def checks() -> dict:
         "K_playground": k_play.ravel().tolist(),
         "max |K - K_playground|": float(np.abs(K - k_play).max()),
         "max |K with damping zeroed - K_playground|": float(np.abs(care_gain(undamped) - k_play).max()),
+        "max |B_c - M^-1 [1, 0]|, with damping": float(np.abs(bc[2:] - b_exact(MODEL)).max()),
+        "max |B_c - M^-1 [1, 0]|, with damping, no implicit correction": float(
+            np.abs(b[2:] / MODEL.opt.timestep - b_exact(MODEL)).max()
+        ),
         "continuous closed-loop poles (1/s)": [
             f"{z.real:.3f}{z.imag:+.3f}j" for z in np.sort_complex(np.linalg.eigvals(ac - bc @ K))
         ],
@@ -344,8 +361,8 @@ def main() -> None:
     result = checks()
     print(json.dumps(result, indent=2))
 
-    impulses = np.round(np.arange(0.0, 0.601, 0.015), 4)
-    tilts = np.round(np.arange(0.0, 0.801, 0.02), 4)
+    impulses = np.round(np.r_[np.arange(0.0, 0.04, 0.001), np.arange(0.04, 0.601, 0.015)], 4)
+    tilts = np.round(np.r_[np.arange(0.0, 0.14, 0.002), np.arange(0.14, 0.801, 0.02)], 4)
     scales = np.round(np.geomspace(0.05, 20.0, 36), 4)
     peak = lab.sweep(push_peak, SEEDS, WORKERS, ctl=NAMES, impulse=impulses.tolist())
     release = lab.sweep(release_ok, SEEDS, WORKERS, ctl=NAMES, tilt=tilts.tolist())
@@ -358,7 +375,9 @@ def main() -> None:
         t_star = limits_by_bisection(pool, release_ok, tilts, release == 1)
         t_side = {side: limits_by_bisection(pool, fn, tilts, sides[side] == 1)
                   for side, fn in (("+", release_plus), ("-", release_minus))}
-        probe = list(pool.map(transfer, ["cartpole"] * len(SEEDS) + [PLANT] * len(SEEDS), [*SEEDS, *SEEDS]))
+        n = len(SEEDS)
+        probe = list(pool.map(transfer, ["cartpole"] * n + [PLANT] * n + ["cartpole"] * n,
+                              [*SEEDS] * 3, [None] * (2 * n) + [1.0] * n))
         quiet = {c: list(pool.map(baseline, [c] * len(SEEDS), SEEDS)) for c in NAMES}
 
     limits = {}
@@ -392,7 +411,7 @@ def main() -> None:
         "PPO local gains": ppo_local_gains(),
         "grid: scales": scales.tolist(),
         "limits": limits,
-        "transfer probe, 0.05 rad release (robot-pg cartpole, then the vendored plant as control)": probe,
+        "transfer probe, 0.05 rad release (robot-pg cartpole, the vendored plant as control, then robot-pg cartpole at +tilt)": probe,
     }
 
     videos = {}
@@ -410,7 +429,7 @@ def main() -> None:
 
 
 def plot(impulses, peak, tilts, release, scales, up, limits) -> None:
-    fig = Figure(figsize=(13, 3.8), layout="constrained")
+    fig = Figure(figsize=(13, 5.2), layout="constrained")
     ax1, ax2, ax3 = fig.subplots(1, 3)
     for i, c in enumerate(NAMES):
         color, lim, guess = COLOR[c], limits[c], PREDICTED[c]
@@ -432,11 +451,14 @@ def plot(impulses, peak, tilts, release, scales, up, limits) -> None:
             title="Push on the pole")
     ax2.set(xlabel="initial tilt, released at rest (rad)", ylabel="recovered",
             title="Release from a tilt")
+    for ax in (ax1, ax2):
+        ax.set_xscale("symlog", linthresh=0.01, linscale=0.5)
+        ax.set_xlim(left=0.0)
     ax3.set_xscale("log")
     ax3.set(xlabel="pole mass / nominal (controller fixed)", ylabel="fraction of seeds up",
             title="Pole-mass error")
-    for ax, loc in ((ax1, "upper right"), (ax2, "upper right"), (ax3, "lower left")):
-        ax.legend(fontsize=7, loc=loc)
+    for ax in (ax1, ax2, ax3):
+        ax.legend(fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=2)
         ax.set_ylim(-0.05, 1.1)
         ax.grid(alpha=0.25, lw=0.5)
     fig.savefig(OUT / "limits.png", dpi=130)

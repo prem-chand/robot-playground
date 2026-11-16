@@ -11,10 +11,10 @@
     "peak raw |u| on the 5 deg start (N)": 2.456366777420044
   },
   "K (lab.linearize, with damping)": [
-    -0.9999999999999956,
-    -38.54257065014816,
-    -4.488209193214056,
-    -7.531927125789591
+    -1.0000000000000009,
+    -38.509166000199166,
+    -4.487606079172048,
+    -7.519223861301782
   ],
   "K_playground": [
     -1.0000000000000027,
@@ -22,15 +22,17 @@
     -3.916633581151732,
     -7.823175210294471
   ],
-  "max |K - K_playground|": 1.5587793729831887,
+  "max |K - K_playground|": 1.5253747230341972,
   "max |K with damping zeroed - K_playground|": 1.5347723092418164e-12,
+  "max |B_c - M^-1 [1, 0]|, with damping": 1.1102230246251565e-16,
+  "max |B_c - M^-1 [1, 0]|, with damping, no implicit correction": 0.00550418436166078,
   "continuous closed-loop poles (1/s)": [
-    "-6.331+0.000j",
-    "-3.332+0.000j",
-    "-3.190+0.000j",
+    "-6.339+0.000j",
+    "-3.324+0.000j",
+    "-3.202+0.000j",
     "-0.314+0.000j"
   ],
-  "50 Hz hold: closed-loop spectral radius": 0.9937399658259205,
+  "50 Hz hold: closed-loop spectral radius": 0.9937408094322278,
   "static capture bound (rad)": 0.7473711955757412,
   "closed form atan(U / ((M + m) g)) (rad)": 0.747371195575741,
   "draw per seed: (x0, tilt0, push sign)": [
@@ -71,7 +73,7 @@
           -0.503,
           3.261
         ],
-        "max Re eig (1/s)": 1.3345
+        "max Re eig (1/s)": 1.3342
       },
       {
         "x (m)": -0.5,
@@ -82,7 +84,7 @@
           -0.307,
           3.843
         ],
-        "max Re eig (1/s)": 1.1061
+        "max Re eig (1/s)": 1.1057
       },
       {
         "x (m)": -0.4,
@@ -93,7 +95,7 @@
           -0.062,
           4.512
         ],
-        "max Re eig (1/s)": 0.873
+        "max Re eig (1/s)": 0.8727
       },
       {
         "x (m)": -0.3,
@@ -104,7 +106,7 @@
           0.232,
           5.265
         ],
-        "max Re eig (1/s)": 0.6385
+        "max Re eig (1/s)": 0.6382
       },
       {
         "x (m)": -0.2,
@@ -115,7 +117,7 @@
           0.571,
           6.089
         ],
-        "max Re eig (1/s)": 0.4071
+        "max Re eig (1/s)": 0.407
       },
       {
         "x (m)": -0.1,
@@ -126,7 +128,7 @@
           0.944,
           6.957
         ],
-        "max Re eig (1/s)": 0.1885
+        "max Re eig (1/s)": 0.1884
       },
       {
         "x (m)": -0.0,
@@ -170,7 +172,7 @@
           2.267,
           9.835
         ],
-        "max Re eig (1/s)": -0.2509
+        "max Re eig (1/s)": -0.251
       },
       {
         "x (m)": 0.4,
@@ -181,7 +183,7 @@
           2.393,
           10.087
         ],
-        "max Re eig (1/s)": -0.2681
+        "max Re eig (1/s)": -0.2682
       },
       {
         "x (m)": 0.5,
@@ -213,7 +215,7 @@
       },
       {
         "x (m)": 0.1176,
-        "max Re eig (1/s)": -0.1481
+        "max Re eig (1/s)": -0.1482
       }
     ]
   },
@@ -291,10 +293,10 @@
         0.0,
         0.03009
       ],
-      "push limit J* median (N s)": 0.0024462890625,
+      "push limit J* median (N s)": 0.0024464111328125005,
       "peak tilt just below J* (rad), per seed": [
         0.0242,
-        0.0204,
+        0.0205,
         0.0222,
         null,
         0.0415
@@ -313,8 +315,8 @@
         0.00849,
         0.11796
       ],
-      "release tilt limit median (rad)": 0.014079589843749999,
-      "release limit / static bound, median": 0.018838817882061556,
+      "release tilt limit median (rad)": 0.014079711914062498,
+      "release limit / static bound, median": 0.018838981214971927,
       "release tilt limit, +tilt side (rad), per seed": [
         0.12023,
         0.11908,
@@ -412,7 +414,7 @@
         },
         {
           "failed_at (s)": null,
-          "x at the end (m)": -0.0011,
+          "x at the end (m)": -0.001,
           "min x (m)": -0.0037
         },
         {
@@ -432,19 +434,19 @@
         }
       ],
       "push limit J* (N s), per seed": [
-        0.19137,
+        0.19139,
         0.19199,
-        0.18962,
-        0.18993,
-        0.18938
+        0.18964,
+        0.18995,
+        0.18939
       ],
-      "push limit J* median (N s)": 0.18993164062499998,
+      "push limit J* median (N s)": 0.18994598388671874,
       "peak tilt just below J* (rad), per seed": [
-        0.4987,
-        0.5033,
-        0.4961,
-        0.4917,
-        0.4937
+        0.4999,
+        0.5045,
+        0.4973,
+        0.4929,
+        0.4949
       ],
       "push grid points that pass above the first failure, per seed": [
         0,
@@ -454,27 +456,27 @@
         0
       ],
       "release tilt limit (rad), per seed": [
-        0.64197,
-        0.64145,
-        0.64035,
-        0.63951,
-        0.63962
+        0.64206,
+        0.64155,
+        0.64045,
+        0.63961,
+        0.63971
       ],
-      "release tilt limit median (rad)": 0.6403466796875,
-      "release limit / static bound, median": 0.8567987145854687,
+      "release tilt limit median (rad)": 0.6404455566406249,
+      "release limit / static bound, median": 0.8569310142428681,
       "release tilt limit, +tilt side (rad), per seed": [
-        0.64073,
-        0.64128,
-        0.64232,
-        0.64309,
-        0.63962
+        0.64083,
+        0.64138,
+        0.64241,
+        0.64318,
+        0.63971
       ],
       "release tilt limit, -tilt side (rad), per seed": [
-        0.64197,
-        0.64145,
-        0.64035,
-        0.63951,
-        0.64302
+        0.64206,
+        0.64155,
+        0.64045,
+        0.63961,
+        0.64311
       ],
       "tilt grid points that pass above the first failure, per seed": [
         0,
@@ -559,10 +561,11 @@
       ]
     }
   },
-  "transfer probe, 0.05 rad release (robot-pg cartpole, then the vendored plant as control)": [
+  "transfer probe, 0.05 rad release (robot-pg cartpole, the vendored plant as control, then robot-pg cartpole at +tilt)": [
     {
       "plant": "cartpole",
       "seed": 0,
+      "tilt0 (rad)": -0.05,
       "recovered": false,
       "failed_at": 1.808,
       "peak |tilt| (rad)": 1.5665,
@@ -577,6 +580,7 @@
     {
       "plant": "cartpole",
       "seed": 1,
+      "tilt0 (rad)": -0.05,
       "recovered": false,
       "failed_at": 1.812,
       "peak |tilt| (rad)": 1.5689,
@@ -591,6 +595,7 @@
     {
       "plant": "cartpole",
       "seed": 2,
+      "tilt0 (rad)": -0.05,
       "recovered": false,
       "failed_at": 1.738,
       "peak |tilt| (rad)": 1.5653,
@@ -605,6 +610,7 @@
     {
       "plant": "cartpole",
       "seed": 3,
+      "tilt0 (rad)": -0.05,
       "recovered": false,
       "failed_at": 1.67,
       "peak |tilt| (rad)": 1.5673,
@@ -619,6 +625,7 @@
     {
       "plant": "cartpole",
       "seed": 4,
+      "tilt0 (rad)": 0.05,
       "recovered": true,
       "failed_at": null,
       "peak |tilt| (rad)": 0.05,
@@ -628,6 +635,7 @@
     {
       "plant": "cartpole_playground",
       "seed": 0,
+      "tilt0 (rad)": -0.05,
       "recovered": false,
       "failed_at": 1.686,
       "peak |tilt| (rad)": 1.5666,
@@ -642,6 +650,7 @@
     {
       "plant": "cartpole_playground",
       "seed": 1,
+      "tilt0 (rad)": -0.05,
       "recovered": false,
       "failed_at": 1.69,
       "peak |tilt| (rad)": 1.5687,
@@ -656,6 +665,7 @@
     {
       "plant": "cartpole_playground",
       "seed": 2,
+      "tilt0 (rad)": -0.05,
       "recovered": false,
       "failed_at": 1.6460000000000001,
       "peak |tilt| (rad)": 1.5597,
@@ -670,6 +680,7 @@
     {
       "plant": "cartpole_playground",
       "seed": 3,
+      "tilt0 (rad)": -0.05,
       "recovered": false,
       "failed_at": 1.606,
       "peak |tilt| (rad)": 1.5673,
@@ -684,6 +695,57 @@
     {
       "plant": "cartpole_playground",
       "seed": 4,
+      "tilt0 (rad)": 0.05,
+      "recovered": true,
+      "failed_at": null,
+      "peak |tilt| (rad)": 0.05,
+      "peak raw |u| (N)": 1.5436,
+      "at first |tilt| > 0.2 rad": null
+    },
+    {
+      "plant": "cartpole",
+      "seed": 0,
+      "tilt0 (rad)": 0.05,
+      "recovered": true,
+      "failed_at": null,
+      "peak |tilt| (rad)": 0.05,
+      "peak raw |u| (N)": 1.4483,
+      "at first |tilt| > 0.2 rad": null
+    },
+    {
+      "plant": "cartpole",
+      "seed": 1,
+      "tilt0 (rad)": 0.05,
+      "recovered": true,
+      "failed_at": null,
+      "peak |tilt| (rad)": 0.05,
+      "peak raw |u| (N)": 1.3179,
+      "at first |tilt| > 0.2 rad": null
+    },
+    {
+      "plant": "cartpole",
+      "seed": 2,
+      "tilt0 (rad)": 0.05,
+      "recovered": true,
+      "failed_at": null,
+      "peak |tilt| (rad)": 0.05,
+      "peak raw |u| (N)": 1.3813,
+      "at first |tilt| > 0.2 rad": null
+    },
+    {
+      "plant": "cartpole",
+      "seed": 3,
+      "tilt0 (rad)": 0.05,
+      "recovered": true,
+      "failed_at": null,
+      "peak |tilt| (rad)": 0.05,
+      "peak raw |u| (N)": 1.271,
+      "at first |tilt| > 0.2 rad": null
+    },
+    {
+      "plant": "cartpole",
+      "seed": 4,
+      "tilt0 (rad)": 0.05,
       "recovered": true,
       "failed_at": null,
       "peak |tilt| (rad)": 0.05,
@@ -703,7 +765,7 @@
       "failed_at (s)": null
     },
     "lqr_push_recover.mp4": {
-      "impulse (N s)": 0.1818,
+      "impulse (N s)": 0.18182,
       "recovered": true,
       "failed_at (s)": null
     }
