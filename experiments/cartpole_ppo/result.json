@@ -1,7 +1,7 @@
 {
   "max |numpy - torch|, 10000 obs, run.py": 9.5367431640625e-07,
   "max |numpy - torch|, 10000 obs, export": 9.5367431640625e-07,
-  "replay of robot-playground's 10 s PPO run": {
+  "replay of robot-playground-v0's 10 s PPO run": {
     "max |dx| (m)": 4.6724951074939014e-08,
     "max |dtilt| (rad)": 2.0622686829714285e-09,
     "max |dxdot| (m/s)": 2.3176786781431424e-08,

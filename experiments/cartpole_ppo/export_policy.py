@@ -1,11 +1,11 @@
 """Export the user's cart-pole PPO checkpoint to policy.npz for the NumPy port.
 
-Run it inside the robot-playground checkout, with its rl extra:
+Run it inside the robot-playground-v0 checkout, with its rl extra:
 
-cd <robot-playground> && uv run --extra rl python <robot-pg>/experiments/cartpole_ppo/export_policy.py
+cd <robot-playground-v0> && uv run --extra rl python <this repo>/experiments/cartpole_ppo/export_policy.py
 
 The weights keep their stored float32 values. The reference trajectory comes
-from robot-playground's own run() from the declared 5 degree start.
+from robot-playground-v0's own run() from the declared 5 degree start.
 """
 
 import hashlib

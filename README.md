@@ -31,7 +31,7 @@ All values are the median of 5 seeds, unless the row says otherwise. Each experi
 |---|---|---|---|
 | [Panda: reach limits](experiments/panda_reach/NOTES.md) | At what torque limit and latency does a 1 cm reach fail? | Torque: 0.51 of nominal, or 0.96 if the arm must stay off its joint stops (4 of 5 seeds). Latency: 111 ms. | Static gravity bound (0.59), joint-limit constraint forces |
 | [Cart-pole: LQR limits](experiments/cartpole_lqr/NOTES.md) | How large a push, and how much pole-mass error, can a fixed LQR take? | Push: 0.883 N·s (5 seeds within 0.06%). Stays up from 0.05 to 12 times the nominal pole mass. | `python-control` gives the same gain to 1.4e-14 |
-| [Cart-pole: own PPO policy against LQR](experiments/cartpole_ppo/NOTES.md) | How large a push and tilt can a PPO policy trained in the author's own robot-playground repo take, against an LQR on the same plant? | Push: PPO 0.0024 N·s, LQR 0.190 N·s. Release tilt: PPO 0.014 rad, LQR 0.640 rad. The PPO falls with no push in 2 of 5 seeds, and holds 0.12 rad only on the side it trained on. | Replay of the robot-playground torch run to 5e-8, static capture bound 0.747 rad |
+| [Cart-pole: own PPO policy against LQR](experiments/cartpole_ppo/NOTES.md) | How large a push and tilt can a PPO policy trained in the author's own robot-playground-v0 repo take, against an LQR on the same plant? | Push: PPO 0.0024 N·s, LQR 0.190 N·s. Release tilt: PPO 0.014 rad, LQR 0.640 rad. The PPO falls with no push in 2 of 5 seeds, and holds 0.12 rad only on the side it trained on. | Replay of the robot-playground-v0 torch run to 5e-8, static capture bound 0.747 rad |
 
 The prediction and the surprise for each result are in its `NOTES.md`. Several predictions were wrong, and the notes keep them.
 
@@ -59,7 +59,7 @@ uv run --extra dev pyright
 | Path | Contents |
 |---|---|
 | `src/robot_pg/` | Blocks, controllers, scenarios, the rollout loop, replay and the CLI |
-| `src/robot_pg/robots/` | Robot models: cart-pole, the robot-playground cart-pole, diff-drive, Panda |
+| `src/robot_pg/robots/` | Robot models: cart-pole, the robot-playground-v0 cart-pole, diff-drive, Panda |
 | `experiments/<name>/` | One script, `NOTES.md`, results, plots and videos for each experiment |
 | `tests/` | Unit tests |
 

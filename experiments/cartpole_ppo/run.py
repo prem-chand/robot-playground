@@ -1,4 +1,4 @@
-"""The user's cart-pole PPO policy against an LQR on robot-playground's plant.
+"""The user's cart-pole PPO policy against an LQR on robot-playground-v0's plant.
 
 uv run --extra dev --extra viz python experiments/cartpole_ppo/run.py
 
@@ -49,7 +49,7 @@ def continuous(model: mujoco.MjModel) -> tuple[np.ndarray, np.ndarray]:
     MuJoCo's Euler step is v' = v + dt (M + dt D)^-1 f(q, v, u), with the joint
     damping D implicit. So (I + dt M^-1 D) (A_d - I) / dt on those rows is the
     exact acceleration Jacobian M^-1 df. The position rows are the identity
-    block, as in robot-playground.
+    block, as in robot-playground-v0.
     """
     a, b = lab.linearize(model)
     dt, nv = model.opt.timestep, model.nv
@@ -304,7 +304,7 @@ def static_capture(model: mujoco.MjModel = MODEL) -> float:
 
 
 def replay() -> dict:
-    """robot-playground rows are post-tick states, so row i is physics step 10 (i + 1)."""
+    """robot-playground-v0 rows are post-tick states, so row i is physics step 10 (i + 1)."""
     every = round(CONTROL_DT / MODEL.opt.timestep)
     policy = PeakOutput(ppo)
     run = lab.rollout(MODEL, policy, 10.0 + CONTROL_DT, qpos0=NET["ref_qpos0"],
@@ -335,7 +335,7 @@ def checks() -> dict:
     return {
         "max |numpy - torch|, 10000 obs, run.py": float(np.abs(numpy_out - NET["check_torch"]).max()),
         "max |numpy - torch|, 10000 obs, export": float(NET["max_abs_numpy_minus_torch"]),
-        "replay of robot-playground's 10 s PPO run": replay(),
+        "replay of robot-playground-v0's 10 s PPO run": replay(),
         "K (lab.linearize, with damping)": K.ravel().tolist(),
         "K_playground": k_play.ravel().tolist(),
         "max |K - K_playground|": float(np.abs(K - k_play).max()),
