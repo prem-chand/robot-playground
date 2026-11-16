@@ -1,4 +1,4 @@
-# robot-pg
+# robot-playground
 
 Controller experiments on simulated robots in MuJoCo. Each experiment asks one question about a controller's limit, such as "how hard a push can it take?". It sweeps the disturbance to the failure point over 5 seeds, and checks the result against an outside proof: an analytic bound, a second implementation, or a linear model.
 
@@ -11,11 +11,11 @@ Controller experiments on simulated robots in MuJoCo. Each experiment asks one q
 Install [uv](https://docs.astral.sh/uv/). Then run one command. `uv run` makes the environment, installs the packages, and runs the tool:
 
 ```sh
-git clone https://github.com/prem-chand/robot-pg.git && cd robot-pg
+git clone https://github.com/prem-chand/robot-playground.git && cd robot-playground
 uv run robot-pg doctor
 ```
 
-`robot-pg doctor` prints the Python, MuJoCo and NumPy versions and the CPU. The last line is `ok`. The project uses Python 3.12.
+The Python package and the CLI use the short name `robot-pg`. `robot-pg doctor` prints the Python, MuJoCo and NumPy versions and the CPU. The last line is `ok`. The project uses Python 3.12.
 
 To run the cart-pole experiment again (about 3 minutes on a 6-core laptop CPU):
 
