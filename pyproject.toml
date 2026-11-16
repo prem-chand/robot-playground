@@ -37,9 +37,6 @@ build-backend = "uv_build"
 addopts = "--import-mode=importlib"
 testpaths = ["tests"]
 
-[tool.ruff]
-extend-exclude = ["docs/plan-evidence"]
-
 [tool.pyright]
 include = ["src", "tests", "scripts"]
 # The rl extra is optional. Without it, torch and gymnasium are unknown types

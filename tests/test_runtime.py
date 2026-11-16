@@ -76,7 +76,7 @@ def test_base_linear_velocity_is_in_the_body_frame():
 
 def test_instability_raises_with_the_first_bad_dof(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    model = load(ROOT / "docs/plan-evidence/proto/diffdrive_euler.xml")
+    model = load(ROOT / "tests/data/diffdrive_euler.xml")
     graph = Graph(
         {"hold": Hold(SignalSpec("command", (2,), "rad/s"), [5.0, 5.0])}, ("command",)
     )
@@ -88,7 +88,7 @@ def test_instability_raises_with_the_first_bad_dof(tmp_path, monkeypatch):
 
 def test_session_refuses_to_advance_after_instability(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    model = load(ROOT / "docs/plan-evidence/proto/diffdrive_euler.xml")
+    model = load(ROOT / "tests/data/diffdrive_euler.xml")
     graph = Graph(
         {"hold": Hold(SignalSpec("command", (2,), "rad/s"), [5.0, 5.0])}, ("command",)
     )
