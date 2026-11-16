@@ -68,5 +68,9 @@ uv run --extra dev pyright
 - The Panda model comes from [MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie).
 - Each model folder keeps its license file and a `VENDORED.txt` with the source commit.
 
+## License
+
+The code is under the MIT license in [LICENSE](LICENSE). Each vendored model keeps its own license file in its folder.
+
 ## Next
 
