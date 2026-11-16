@@ -74,3 +74,4 @@ The code is under the MIT license in [LICENSE](LICENSE). Each vendored model kee
 
 ## Next
 
+- Train the cart-pole PPO again from random starts with pushes, and run the same sweeps against the LQR.

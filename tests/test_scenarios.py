@@ -98,6 +98,30 @@ def test_seed_0_draws_the_nominal_sample():
     assert ep.reference == SCENARIOS["panda.reach_grid"].reference
 
 
+def test_seeds_1_and_2_draw_different_samples_inside_the_ranges():
+    samples = [
+        ROBOTS["diffdrive"].episode(SCENARIOS["diffdrive.figure8"], seed).sample
+        for seed in range(1, 21)
+    ]
+    assert samples[0] != samples[1]
+    assert samples[0].friction_factor == 1.0047286498801027
+    for s in samples:
+        dx, dy, yaw = s.base_offset
+        assert math.hypot(dx, dy) <= 0.05
+        assert abs(yaw) <= math.radians(5)
+        assert len(s.joint_offsets) == 2
+        assert max(abs(j) for j in s.joint_offsets) <= 0.05
+        assert 0.8 <= s.friction_factor <= 1.2
+    panda = [
+        ROBOTS["panda"].episode(SCENARIOS["panda.reach_grid"], seed).sample
+        for seed in (1, 2)
+    ]
+    assert panda[0].target_order != panda[1].target_order
+    assert sorted(panda[0].target_order) == list(range(27))
+    assert panda[0].base_offset == (0.0, 0.0, 0.0)
+    assert len(panda[0].joint_offsets) == 7
+
+
 def test_joint_offsets_stay_inside_the_joint_range():
     m = ROBOTS["panda"].model()
     for seed in range(1, 40):
@@ -109,6 +133,23 @@ def test_joint_offsets_stay_inside_the_joint_range():
         )
         lo, hi = m.jnt_range[:7].T
         assert np.all((q[:7] >= lo) & (q[:7] <= hi))
+
+
+def test_scenario_round_trips_through_json_and_overrides_any_field():
+    for scenario in SCENARIOS.values():
+        assert (
+            Scenario.from_dict(json.loads(json.dumps(scenario.to_dict()))) == scenario
+        )
+    base = SCENARIOS["diffdrive.figure8"]
+    pushed = Scenario.from_dict(
+        {
+            **base.to_dict(),
+            "pushes": [{"at_s": 5.0, "duration_s": 0.1, "force_n": [0, 20, 0]}],
+        }
+    )
+    assert pushed == replace(base, pushes=(Push(5.0, 0.1, (0.0, 20.0, 0.0)),))
+    with pytest.raises(ValueError, match="unknown scenario fields \\['friction'\\]"):
+        Scenario.from_dict({**base.to_dict(), "friction": 0.4})
 
 
 def test_push_covers_whole_ticks():

@@ -30,27 +30,6 @@ class Hold:
         return self.out
 
 
-class JointPd:
-    def __init__(self, target: Array) -> None:
-        n = len(target)
-        self.spec = BlockSpec(
-            500.0,
-            inputs=(SignalSpec("qpos_joints", (n,)), SignalSpec("qvel_joints", (n,))),
-            outputs=(SignalSpec("tau", (n,), "N m"),),
-        )
-        self.target = target
-        self.digest = f"target {target}"
-
-    def reset(self, seed: int) -> None:
-        pass
-
-    def step(self, inputs: Mapping[str, Array]) -> Mapping[str, Array]:
-        return {
-            "tau": 60.0 * (self.target - inputs["qpos_joints"])
-            - 2.0 * inputs["qvel_joints"]
-        }
-
-
 def episode(robot: str, scenario: str, seed: int = 0, **fields: float) -> Episode:
     return ROBOTS[robot].episode(replace(SCENARIOS[scenario], **fields), seed)
 
@@ -84,6 +63,19 @@ def test_panda_gripper_takes_a_0_to_4_cm_command_and_the_ee_site_is_added_at_loa
         str(ASSETS / "franka_emika_panda/scene.xml")
     )
     assert vendored.nsite == 0
+
+
+def test_inspect_lists_kinds_and_base_signals(capsys: pytest.CaptureFixture[str]):
+    assert main(["inspect", "diffdrive"]) == 0
+    out = capsys.readouterr().out
+    assert "actuators 2: 2 velocity" in out
+    for signal in ("base_pos", "base_quat", "base_linvel_body", "base_angvel_body"):
+        assert f"  {signal} " in out
+    main(["inspect", "panda"])
+    out = capsys.readouterr().out
+    assert "actuators 8: 8 position" in out
+    assert "tendon split  0 to 0.04" in out
+    assert "  ee_pos " in out
 
 
 def test_diffdrive_holds_home_on_three_contacts():
@@ -139,6 +131,40 @@ def test_episode_edits_a_copy_and_applying_twice_equals_once():
     after = ROBOTS["panda"].model()
     assert np.array_equal(after.body_mass, before.body_mass)
     assert np.array_equal(after.geom_friction, before.geom_friction)
+
+
+def test_seed_offsets_reach_the_plant_at_tick_0():
+    ep = episode("diffdrive", "diffdrive.figure8", seed=2)
+    m = ep.model()
+    session = Session(
+        m, Graph({"h": Hold((SignalSpec("w", (2,), "rad/s"), [0.0, 0.0]))}, ("w",)), 2
+    )
+    session.advance(1)
+    dx, dy, yaw = ep.sample.base_offset
+    home = ROBOTS["diffdrive"].model().key_qpos[0]
+    assert np.allclose(session.signal("base_pos"), home[:3] + [dx, dy, 0.0])
+    assert np.allclose(
+        session.signal("base_quat"), [math.cos(yaw / 2), 0, 0, math.sin(yaw / 2)]
+    )
+    assert np.allclose(
+        session.signal("qpos_joints"), home[7:] + ep.sample.joint_offsets
+    )
+
+
+def test_qpos_rebuild_from_recorded_signals_is_exact():
+    ep = episode("diffdrive", "diffdrive.figure8", seed=1)
+    m = ep.model()
+    d = mujoco.MjData(m)
+    mujoco.mj_resetDataKeyframe(m, d, m.key("home").id)
+    traj = run(
+        m,
+        Graph({"h": Hold((SignalSpec("w", (2,), "rad/s"), [0.0, 0.0]))}, ("w",)),
+        0.1,
+        1,
+    )
+    q = ROBOTS["diffdrive"].qpos(traj.signals)
+    assert q.shape == (50, 9)
+    assert np.array_equal(q[0], d.qpos)
 
 
 def test_diffdrive_fails_beyond_50_cm_cross_track():

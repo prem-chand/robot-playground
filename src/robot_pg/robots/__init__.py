@@ -8,7 +8,6 @@ from typing import Literal
 
 import mujoco
 import numpy as np
-from numpy.typing import NDArray
 
 from robot_pg.contract import Array
 from robot_pg.plant import _FATAL, EE_SITE, HOME_KEY, parse_model
@@ -62,21 +61,14 @@ class Failure:
 @dataclass(frozen=True)
 class FailRule:
     """Each threshold that is set is one check, and a run also fails on the
-    warnings that raise `RunUnstable`. `trunk_contact` fails when a collision
-    geom of the base body touches the geom named `floor`.
+    warnings that raise `RunUnstable`.
     """
 
-    min_base_height_m: float | None = None
-    trunk_contact: bool = False
     max_cross_track_m: float | None = None
     max_hold_error_m: float | None = None
 
     def describe(self) -> str:
         checks = []
-        if self.min_base_height_m is not None:
-            checks.append(f"base height < {self.min_base_height_m:g} m")
-        if self.trunk_contact:
-            checks.append("trunk touches floor")
         if self.max_cross_track_m is not None:
             checks.append(f"cross-track > {self.max_cross_track_m:g} m")
         if self.max_hold_error_m is not None:
@@ -91,20 +83,6 @@ class FailRule:
         """The first failure at a tick at or after `since`, or None."""
         dt, n = trajectory.dt, len(trajectory)
         found: list[tuple[int, str]] = []
-        if self.min_base_height_m is not None:
-            z = _need(trajectory.signals, "base_pos")[since:, 2]
-            if (low := np.flatnonzero(z < self.min_base_height_m)).size:
-                found.append(
-                    (
-                        since + int(low[0]),
-                        f"base height {z[low[0]]:.3f} m < {self.min_base_height_m:g} m",
-                    )
-                )
-        if (
-            self.trunk_contact
-            and (tick := _trunk_contact(trajectory, episode.robot, since)) is not None
-        ):
-            found.append((tick, "trunk touches floor"))
         ref = episode.reference
         if self.max_cross_track_m is not None and isinstance(ref, PathRef):
             d = ref.cross_track(_need(trajectory.signals, "base_pos")[since:, :2])
@@ -304,47 +282,6 @@ def _need(signals: Mapping[str, Array], name: str) -> Array:
             f"the fail rule needs signal {name}, which the run did not record"
         )
     return signals[name]
-
-
-def _ticks_near_floor(
-    m: mujoco.MjModel,
-    trajectory: Trajectory,
-    since: int,
-    trunk: NDArray[np.intp],
-    floor: int,
-) -> NDArray[np.intp]:
-    """Ticks from `since` where some trunk geom's bounding sphere reaches the floor."""
-    pos = _need(trajectory.signals, "base_pos")[since:]
-    w, x, y, z = _need(trajectory.signals, "base_quat")[since:].T
-    z_row = np.stack(
-        [2 * (x * z - w * y), 2 * (y * z + w * x), 1 - 2 * (x * x + y * y)], -1
-    )
-    center_z = pos[:, 2:3] + z_row @ m.geom_pos[trunk].T
-    reach = m.geom_rbound[trunk] + m.geom_margin[trunk] + m.geom_margin[floor]
-    return np.flatnonzero((center_z - reach < m.geom_pos[floor, 2]).any(axis=1))
-
-
-def _trunk_contact(trajectory: Trajectory, robot: RobotSpec, since: int) -> int | None:
-    m = _compiled(robot)
-    base, floor = m.body(robot.base_body).id, m.geom("floor").id
-    trunk = np.flatnonzero(
-        (m.geom_bodyid == base) & ((m.geom_contype != 0) | (m.geom_conaffinity != 0))
-    )
-    near = _ticks_near_floor(m, trajectory, since, trunk, floor)
-    if not near.size:
-        return None
-    rows = {k: v[since:][near] for k, v in trajectory.signals.items()}
-    qpos = robot.qpos(rows)
-    d = mujoco.MjData(m)
-    for i, q in zip(near, qpos, strict=True):
-        d.qpos[:] = q
-        mujoco.mj_kinematics(m, d)
-        mujoco.mj_collision(m, d)
-        for c in d.contact[: d.ncon]:
-            pair = {int(c.geom1), int(c.geom2)}
-            if floor in pair and pair & set(trunk.tolist()):
-                return since + int(i)
-    return None
 
 
 ROBOTS: Mapping[str, RobotSpec] = {
