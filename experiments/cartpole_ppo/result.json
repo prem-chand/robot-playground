@@ -1,0 +1,671 @@
+{
+  "max |numpy - torch|, 10000 obs, run.py": 9.5367431640625e-07,
+  "max |numpy - torch|, 10000 obs, export": 9.5367431640625e-07,
+  "replay of robot-playground's 10 s PPO run": {
+    "max |dx| (m)": 4.6724951074939014e-08,
+    "max |dtilt| (rad)": 2.0622686829714285e-09,
+    "max |dxdot| (m/s)": 2.3176786781431424e-08,
+    "max |dtiltdot| (rad/s)": 1.0750997980757404e-08,
+    "max |du| (N)": 2.384185791015625e-07,
+    "failed": false,
+    "peak raw |u| on the 5 deg start (N)": 2.456366777420044
+  },
+  "K (lab.linearize, with damping)": [
+    -0.9999999999999956,
+    -38.54257065014816,
+    -4.488209193214056,
+    -7.531927125789591
+  ],
+  "K_playground": [
+    -1.0000000000000027,
+    -36.98379127716497,
+    -3.916633581151732,
+    -7.823175210294471
+  ],
+  "max |K - K_playground|": 1.5587793729831887,
+  "max |K with damping zeroed - K_playground|": 1.5347723092418164e-12,
+  "continuous closed-loop poles (1/s)": [
+    "-6.331+0.000j",
+    "-3.332+0.000j",
+    "-3.190+0.000j",
+    "-0.314+0.000j"
+  ],
+  "50 Hz hold: closed-loop spectral radius": 0.9937399658259205,
+  "static capture bound (rad)": 0.7473711955757412,
+  "closed form atan(U / ((M + m) g)) (rad)": 0.747371195575741,
+  "draw per seed: (x0, tilt0, push sign)": [
+    [
+      0.0137,
+      -0.0092,
+      -1.0
+    ],
+    [
+      0.0012,
+      0.018,
+      -1.0
+    ],
+    [
+      -0.0238,
+      -0.0081,
+      -1.0
+    ],
+    [
+      -0.0414,
+      -0.0105,
+      -1.0
+    ],
+    [
+      0.0443,
+      0.0005,
+      1.0
+    ]
+  ],
+  "PPO local gains": {
+    "along x": [
+      {
+        "x (m)": -0.6,
+        "u at rest (N)": 0.1876,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          -0.536,
+          14.146,
+          -0.503,
+          3.261
+        ],
+        "max Re eig (1/s)": 1.3345
+      },
+      {
+        "x (m)": -0.5,
+        "u at rest (N)": 0.1357,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          -0.498,
+          15.686,
+          -0.307,
+          3.843
+        ],
+        "max Re eig (1/s)": 1.1061
+      },
+      {
+        "x (m)": -0.4,
+        "u at rest (N)": 0.0886,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          -0.44,
+          17.399,
+          -0.062,
+          4.512
+        ],
+        "max Re eig (1/s)": 0.873
+      },
+      {
+        "x (m)": -0.3,
+        "u at rest (N)": 0.0484,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          -0.359,
+          19.269,
+          0.232,
+          5.265
+        ],
+        "max Re eig (1/s)": 0.6385
+      },
+      {
+        "x (m)": -0.2,
+        "u at rest (N)": 0.0175,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          -0.256,
+          21.262,
+          0.571,
+          6.089
+        ],
+        "max Re eig (1/s)": 0.4071
+      },
+      {
+        "x (m)": -0.1,
+        "u at rest (N)": -0.0022,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          -0.135,
+          23.316,
+          0.944,
+          6.957
+        ],
+        "max Re eig (1/s)": 0.1885
+      },
+      {
+        "x (m)": -0.0,
+        "u at rest (N)": -0.009,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          -0.002,
+          25.338,
+          1.332,
+          7.828
+        ],
+        "max Re eig (1/s)": 0.002
+      },
+      {
+        "x (m)": 0.1,
+        "u at rest (N)": -0.0025,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          0.131,
+          27.202,
+          1.704,
+          8.644
+        ],
+        "max Re eig (1/s)": -0.1308
+      },
+      {
+        "x (m)": 0.2,
+        "u at rest (N)": 0.0167,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          0.249,
+          28.765,
+          2.028,
+          9.335
+        ],
+        "max Re eig (1/s)": -0.2096
+      },
+      {
+        "x (m)": 0.3,
+        "u at rest (N)": 0.0464,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          0.338,
+          29.887,
+          2.267,
+          9.835
+        ],
+        "max Re eig (1/s)": -0.2509
+      },
+      {
+        "x (m)": 0.4,
+        "u at rest (N)": 0.0829,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          0.385,
+          30.453,
+          2.393,
+          10.087
+        ],
+        "max Re eig (1/s)": -0.2681
+      },
+      {
+        "x (m)": 0.5,
+        "u at rest (N)": 0.1217,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          0.383,
+          30.406,
+          2.39,
+          10.064
+        ],
+        "max Re eig (1/s)": -0.2673
+      },
+      {
+        "x (m)": 0.6,
+        "u at rest (N)": 0.1579,
+        "du/d(x, tilt, xdot, tiltdot)": [
+          0.335,
+          29.757,
+          2.259,
+          9.769
+        ],
+        "max Re eig (1/s)": -0.249
+      }
+    ],
+    "rest equilibria, |x| <= 1.5 m": [
+      {
+        "x (m)": -0.1151,
+        "max Re eig (1/s)": 0.2199
+      },
+      {
+        "x (m)": 0.1176,
+        "max Re eig (1/s)": -0.1481
+      }
+    ]
+  },
+  "grid: scales": [
+    0.05,
+    0.0593,
+    0.0704,
+    0.0836,
+    0.0992,
+    0.1177,
+    0.1396,
+    0.1657,
+    0.1967,
+    0.2334,
+    0.277,
+    0.3287,
+    0.39,
+    0.4629,
+    0.5493,
+    0.6518,
+    0.7735,
+    0.918,
+    1.0894,
+    1.2928,
+    1.5341,
+    1.8206,
+    2.1605,
+    2.5639,
+    3.0426,
+    3.6106,
+    4.2848,
+    5.0848,
+    6.0342,
+    7.1608,
+    8.4978,
+    10.0844,
+    11.9673,
+    14.2017,
+    16.8533,
+    20.0
+  ],
+  "limits": {
+    "ppo": {
+      "no disturbance, 15 s: failure time per seed (s)": [
+        12.244,
+        null,
+        null,
+        5.558,
+        null
+      ],
+      "push limit J* (N s), per seed": [
+        0.00127,
+        0.00975,
+        0.00245,
+        0.0,
+        0.03009
+      ],
+      "push limit J* median (N s)": 0.0024462890625,
+      "peak tilt just below J* (rad), per seed": [
+        0.0242,
+        0.0204,
+        0.0222,
+        null,
+        0.0415
+      ],
+      "push grid points that pass above the first failure, per seed": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "release tilt limit (rad), per seed": [
+        0.01248,
+        0.01423,
+        0.01408,
+        0.00849,
+        0.11796
+      ],
+      "release tilt limit median (rad)": 0.014079589843749999,
+      "release limit / static bound, median": 0.018838817882061556,
+      "release tilt limit, +tilt side (rad), per seed": [
+        0.12023,
+        0.11908,
+        0.11928,
+        0.12182,
+        0.11796
+      ],
+      "release tilt limit, -tilt side (rad), per seed": [
+        0.01248,
+        0.01423,
+        0.01408,
+        0.00849,
+        0.01542
+      ],
+      "tilt grid points that pass above the first failure, per seed": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sim: scales where every seed stays up": [
+        0.1396,
+        0.1657,
+        0.1967,
+        0.2334,
+        0.277,
+        0.3287,
+        0.39,
+        0.4629,
+        0.5493,
+        0.6518,
+        0.7735,
+        0.918,
+        1.0894,
+        1.2928,
+        1.5341,
+        1.8206,
+        2.1605,
+        2.5639,
+        3.0426,
+        3.6106,
+        4.2848,
+        5.0848,
+        6.0342,
+        7.1608,
+        8.4978,
+        10.0844
+      ],
+      "sim: fraction of seeds up, per scale": [
+        0.0,
+        0.2,
+        0.6,
+        0.8,
+        0.8,
+        0.8,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.6,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "lqr": {
+      "no disturbance, 15 s: failure time per seed (s)": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "push limit J* (N s), per seed": [
+        0.19137,
+        0.19199,
+        0.18962,
+        0.18993,
+        0.18938
+      ],
+      "push limit J* median (N s)": 0.18993164062499998,
+      "peak tilt just below J* (rad), per seed": [
+        0.4987,
+        0.5033,
+        0.4961,
+        0.4917,
+        0.4937
+      ],
+      "push grid points that pass above the first failure, per seed": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "release tilt limit (rad), per seed": [
+        0.64197,
+        0.64145,
+        0.64035,
+        0.63951,
+        0.63962
+      ],
+      "release tilt limit median (rad)": 0.6403466796875,
+      "release limit / static bound, median": 0.8567987145854687,
+      "release tilt limit, +tilt side (rad), per seed": [
+        0.64073,
+        0.64128,
+        0.64232,
+        0.64309,
+        0.63962
+      ],
+      "release tilt limit, -tilt side (rad), per seed": [
+        0.64197,
+        0.64145,
+        0.64035,
+        0.63951,
+        0.64302
+      ],
+      "tilt grid points that pass above the first failure, per seed": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sim: scales where every seed stays up": [
+        0.0704,
+        0.0836,
+        0.0992,
+        0.1177,
+        0.1396,
+        0.1657,
+        0.1967,
+        0.2334,
+        0.277,
+        0.3287,
+        0.39,
+        0.4629,
+        0.5493,
+        0.6518,
+        0.7735,
+        0.918,
+        1.0894,
+        1.2928,
+        1.5341,
+        1.8206,
+        2.1605,
+        2.5639,
+        3.0426,
+        3.6106,
+        4.2848,
+        5.0848,
+        6.0342,
+        7.1608,
+        8.4978,
+        10.0844,
+        11.9673,
+        14.2017,
+        16.8533,
+        20.0
+      ],
+      "sim: fraction of seeds up, per scale": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  },
+  "transfer probe, 0.05 rad release (robot-pg cartpole, then the vendored plant as control)": [
+    {
+      "plant": "cartpole",
+      "seed": 0,
+      "recovered": false,
+      "failed_at": 1.808,
+      "peak |tilt| (rad)": 1.5665,
+      "peak raw |u| (N)": 1.1468,
+      "at first |tilt| > 0.2 rad": {
+        "t (s)": 1.37,
+        "tilt (rad)": -0.2004,
+        "tiltdot (rad/s)": -1.0086,
+        "u (N)": 0.5504
+      }
+    },
+    {
+      "plant": "cartpole",
+      "seed": 1,
+      "recovered": false,
+      "failed_at": 1.812,
+      "peak |tilt| (rad)": 1.5689,
+      "peak raw |u| (N)": 1.1479,
+      "at first |tilt| > 0.2 rad": {
+        "t (s)": 1.374,
+        "tilt (rad)": -0.2005,
+        "tiltdot (rad/s)": -1.0141,
+        "u (N)": 0.5556
+      }
+    },
+    {
+      "plant": "cartpole",
+      "seed": 2,
+      "recovered": false,
+      "failed_at": 1.738,
+      "peak |tilt| (rad)": 1.5653,
+      "peak raw |u| (N)": 1.1325,
+      "at first |tilt| > 0.2 rad": {
+        "t (s)": 1.3,
+        "tilt (rad)": -0.2,
+        "tiltdot (rad/s)": -1.0102,
+        "u (N)": 0.5593
+      }
+    },
+    {
+      "plant": "cartpole",
+      "seed": 3,
+      "recovered": false,
+      "failed_at": 1.67,
+      "peak |tilt| (rad)": 1.5673,
+      "peak raw |u| (N)": 1.1481,
+      "at first |tilt| > 0.2 rad": {
+        "t (s)": 1.232,
+        "tilt (rad)": -0.2012,
+        "tiltdot (rad/s)": -1.0106,
+        "u (N)": 0.5069
+      }
+    },
+    {
+      "plant": "cartpole",
+      "seed": 4,
+      "recovered": true,
+      "failed_at": null,
+      "peak |tilt| (rad)": 0.05,
+      "peak raw |u| (N)": 1.5436,
+      "at first |tilt| > 0.2 rad": null
+    },
+    {
+      "plant": "cartpole_playground",
+      "seed": 0,
+      "recovered": false,
+      "failed_at": 1.686,
+      "peak |tilt| (rad)": 1.5666,
+      "peak raw |u| (N)": 1.112,
+      "at first |tilt| > 0.2 rad": {
+        "t (s)": 1.242,
+        "tilt (rad)": -0.2001,
+        "tiltdot (rad/s)": -0.9919,
+        "u (N)": 0.5304
+      }
+    },
+    {
+      "plant": "cartpole_playground",
+      "seed": 1,
+      "recovered": false,
+      "failed_at": 1.69,
+      "peak |tilt| (rad)": 1.5687,
+      "peak raw |u| (N)": 1.1202,
+      "at first |tilt| > 0.2 rad": {
+        "t (s)": 1.246,
+        "tilt (rad)": -0.2001,
+        "tiltdot (rad/s)": -0.9939,
+        "u (N)": 0.538
+      }
+    },
+    {
+      "plant": "cartpole_playground",
+      "seed": 2,
+      "recovered": false,
+      "failed_at": 1.6460000000000001,
+      "peak |tilt| (rad)": 1.5597,
+      "peak raw |u| (N)": 1.1157,
+      "at first |tilt| > 0.2 rad": {
+        "t (s)": 1.204,
+        "tilt (rad)": -0.2005,
+        "tiltdot (rad/s)": -0.9957,
+        "u (N)": 0.5383
+      }
+    },
+    {
+      "plant": "cartpole_playground",
+      "seed": 3,
+      "recovered": false,
+      "failed_at": 1.606,
+      "peak |tilt| (rad)": 1.5673,
+      "peak raw |u| (N)": 1.1193,
+      "at first |tilt| > 0.2 rad": {
+        "t (s)": 1.162,
+        "tilt (rad)": -0.2001,
+        "tiltdot (rad/s)": -0.9939,
+        "u (N)": 0.5567
+      }
+    },
+    {
+      "plant": "cartpole_playground",
+      "seed": 4,
+      "recovered": true,
+      "failed_at": null,
+      "peak |tilt| (rad)": 0.05,
+      "peak raw |u| (N)": 1.5436,
+      "at first |tilt| > 0.2 rad": null
+    }
+  ],
+  "videos (seed 0)": {
+    "ppo_push_recover.mp4": {
+      "impulse (N s)": 0.00121,
+      "recovered": true,
+      "failed_at (s)": null
+    },
+    "ppo_push_fail.mp4": {
+      "impulse (N s)": 0.0014,
+      "recovered": false,
+      "failed_at (s)": null
+    },
+    "lqr_push_recover.mp4": {
+      "impulse (N s)": 0.1818,
+      "recovered": true,
+      "failed_at (s)": null
+    }
+  }
+}
