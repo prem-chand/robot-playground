@@ -10,12 +10,13 @@ def idle(obs: lab.Obs) -> np.ndarray:
     return np.zeros(1)
 
 
-def test_push_gives_its_impulse_as_horizontal_momentum():
+@pytest.mark.parametrize("at", [0.0, 7 * 0.02])
+def test_push_gives_its_impulse_as_horizontal_momentum(at):
     run = lab.rollout(
         lab.load("cartpole"),
         idle,
-        0.2,
-        pushes=[lab.Push("pole", 0.0, 0.1, (5.0, 0.0, 0.0))],
+        at + 0.2,
+        pushes=[lab.Push("pole", at, 0.1, (5.0, 0.0, 0.0))],
     )
     (x_dot, th_dot), th = run.qvel[-1], run.qpos[-1, 1]
     momentum = 1.3 * x_dot + 0.3 * 0.4 * math.cos(th) * th_dot

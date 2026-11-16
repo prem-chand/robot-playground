@@ -149,7 +149,7 @@ def test_push_matches_the_experiment_push():
 
     env = CartPoleEnv(lqr_reward, lambda obs: False, randomization=Randomization(push_max=0.25, push_interval=0.4))
     env.reset(seed=3)
-    pushes = [p for p in env.pushes if p[0] < 1.5]
+    pushes = [p for p in env.pushes if p[0] < 2.0]
     assert len(pushes) >= 2
     actions = np.sin(np.arange(100) / 7.0)
     states = np.array([env.step(np.array([a]))[4]["state"] for a in actions])

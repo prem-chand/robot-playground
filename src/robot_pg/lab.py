@@ -5,6 +5,7 @@ observation holds the plant signals plus the full `qpos`, `qvel`, and `t`.
 """
 
 import itertools
+import math
 from collections import deque
 from collections.abc import Callable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
@@ -120,7 +121,11 @@ def rollout(
     signals = {s.name: np.zeros(s.shape) for s in spec.signals}
     held = d.ctrl / np.array([a.scale for a in spec.actuators])
     pending: deque[tuple[int, Array]] = deque()
-    bodies = [(model.body(p.body).id, p) for p in pushes]
+    # A push covers the steps from the first at or after at_s to the first at
+    # or after its end. The 1e-9 keeps a push that starts or ends on a step
+    # from gaining or losing a step to float error.
+    bodies = [(model.body(p.body).id, p.force, math.ceil(p.at_s / dt - 1e-9),
+               math.ceil((p.at_s + p.duration_s) / dt - 1e-9)) for p in pushes]
     qpos, qvel = np.zeros((n, model.nq)), np.zeros((n, model.nv))
     ctrl = np.zeros((n, model.nu))
     failed_at, reason, k = None, "", 0
@@ -141,9 +146,9 @@ def rollout(
         while pending and pending[0][0] <= k:
             held = pending.popleft()[1]
         d.xfrc_applied[:] = 0.0
-        for body, p in bodies:
-            if p.at_s <= k * dt < p.at_s + p.duration_s:
-                d.xfrc_applied[body, :3] = p.force
+        for body, force, start, end in bodies:
+            if start <= k < end:
+                d.xfrc_applied[body, :3] = force
         try:
             plant.act(held)
         except RunUnstable as bad:

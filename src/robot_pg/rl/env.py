@@ -78,6 +78,9 @@ class Randomization:
     obs_noise: tuple[float, float] = (0.0, 0.0)
 
 
+NO_RANDOMIZATION = Randomization()
+
+
 @dataclass(frozen=True)
 class TrainConfig:
     name: str
@@ -100,7 +103,7 @@ class TrainConfig:
 
 
 CONFIGS = {
-    "v0": TrainConfig("v0", lqr_reward, balance_termination, Randomization()),
+    "v0": TrainConfig("v0", lqr_reward, balance_termination, NO_RANDOMIZATION),
     "v1": TrainConfig(
         "v1", floored_lqr_reward, fall_termination,
         Randomization(start_center=(0.0, 0.0, 0.0, 0.0), start_spread=(0.5, 0.5, 0.2, 0.2),
@@ -116,7 +119,7 @@ class CartPoleEnv(gymnasium.Env):
         termination: Termination,
         *,
         max_duration: float = 10.0,
-        randomization: Randomization = Randomization(),
+        randomization: Randomization = NO_RANDOMIZATION,
     ) -> None:
         super().__init__()
         if not np.isfinite(max_duration) or max_duration <= 0.0:
