@@ -23,6 +23,12 @@ To run the cart-pole experiment again (about 3 minutes on a 6-core laptop CPU):
 uv run --extra dev --extra viz python experiments/cartpole_lqr/run.py
 ```
 
+To train the cart-pole PPO policy (200k steps, seed 0), use the optional `rl` extra. It adds torch and gymnasium:
+
+```sh
+uv run --extra rl python -m robot_pg.rl --output cart_pole_ppo.pt --seed 0
+```
+
 ## Results
 
 All values are the median of 5 seeds, unless the row says otherwise. Each experiment folder holds the script, `NOTES.md`, the result JSON, the plots and the videos.
