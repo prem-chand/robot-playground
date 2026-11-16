@@ -1,0 +1,4 @@
+https://github.com/prem-chand/robot-playground-v0.git c67f5d8506390ea48af7b97967d6d060e0171178 (src/robot_playground/robots/cart_pole.xml)
+The file is a byte-for-byte copy, renamed to cartpole_playground.xml so that lab.load("cartpole_playground") finds it.
+The checkout HEAD was d29b990, a merge commit with the same tree as c67f5d8 (tree d144f6ad).
+This is the plant of the cart-pole PPO policy in experiments/cartpole_ppo/. The policy is valid only on this plant.
