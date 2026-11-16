@@ -230,10 +230,12 @@ def limits_by_bisection(pool: Executor, ok: Ok, grid: np.ndarray, passed: np.nda
     return out
 
 
-def baseline(ctl: str, seed: int) -> float | None:
-    """Failure time with no push and no added tilt over 15 s, or None."""
+def baseline(ctl: str, seed: int) -> dict:
+    """15 s with no push and no added tilt."""
     q0, _, _ = draw(seed)
-    return roll(CONTROLLERS[ctl], 15.0, seed, q0).failed_at
+    run = roll(CONTROLLERS[ctl], 15.0, seed, q0)
+    return {"failed_at (s)": run.failed_at, "x at the end (m)": round(float(run.qpos[-1, 0]), 4),
+            "min x (m)": round(float(run.qpos[:, 0].min()), 4)}
 
 
 def mlp_jacobian(obs: np.ndarray) -> np.ndarray:
@@ -363,7 +365,7 @@ def main() -> None:
     for i, c in enumerate(NAMES):
         js, ts = j_star[i], t_star[i]
         limits[c] = {
-            "no disturbance, 15 s: failure time per seed (s)": quiet[c],
+            "no disturbance, 15 s, per seed": quiet[c],
             "push limit J* (N s), per seed": js.round(5).tolist(),
             "push limit J* median (N s)": float(np.median(js)),
             "peak tilt just below J* (rad), per seed": [
