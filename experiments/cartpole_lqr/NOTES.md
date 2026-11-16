@@ -16,7 +16,7 @@ Run: `uv run --extra dev --extra viz python experiments/cartpole_lqr/run.py` (ab
 
 ## Prediction (recorded 2026-10-17, before any run)
 
-- The user: the pole fails at about 0.6 rad of tilt. The mass error holds from -40% to +200%.
+- The author: the pole fails at about 0.6 rad of tilt. The mass error holds from -40% to +200%.
 - Claude: failure at 0.5 rad, or when the cart force holds at its limit. The mass error holds from -50% to +150%.
 
 ## Result
@@ -26,9 +26,9 @@ Run: `uv run --extra dev --extra viz python experiments/cartpole_lqr/run.py` (ab
 | Quantity | Result (5 seeds) | Prediction |
 |---|---|---|
 | Push limit J* (0.1 s push at the pole's center of mass) | 0.8826 to 0.8831 N s | none |
-| Peak tilt just below J* | 0.8465 to 0.8473 rad | user 0.6, Claude 0.5 |
-| Release-from-rest tilt limit | 0.7898 to 0.7927 rad | user 0.6, Claude 0.5 |
-| Pole-mass range that stays stable | 0.05× to 13.55× (-95% to +1255%) | user -40% to +200%, Claude -50% to +150% |
+| Peak tilt just below J* | 0.8465 to 0.8473 rad | author 0.6, Claude 0.5 |
+| Release-from-rest tilt limit | 0.7898 to 0.7927 rad | author 0.6, Claude 0.5 |
+| Pole-mass range that stays stable | 0.05× to 13.55× (-95% to +1255%) | author -40% to +200%, Claude -50% to +150% |
 
 Both predictions were too low. The tilt limit is about 0.3 rad higher than predicted. The mass range is about 5 times wider than predicted.
 

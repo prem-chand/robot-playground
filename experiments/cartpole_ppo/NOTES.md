@@ -5,7 +5,7 @@ Run: `uv run --extra dev --extra viz python experiments/cartpole_ppo/run.py` (ab
 ## Setup
 
 - Model: `robots/cartpole_playground/cartpole_playground.xml`, a byte-for-byte copy of robot-playground-v0's `cart_pole.xml`. Cart 1.0 kg with slide damping 0.5. Pole 0.1 kg, a 0.6 m capsule with its center of mass 0.3 m above the pivot, hinge damping 0.01, armature 0.001. Cart force limit ±10 N. dt 2 ms. This is not robot-pg's own `cartpole` plant.
-- PPO: the user's own policy. The user trained it with seed 0 for 200k steps in robot-playground-v0, the user's own repo (now archived, and not MuJoCo Playground). The checkpoint is `cart_pole_ppo.pt` at commit c67f5d8 (it entered the repo in 2650c98, sha256 `2dc28c24…f4b0`). The net is a 4-64-64-1 tanh MLP. The controller uses the mean action. `export_policy.py` writes the float32 weights to `policy.npz`, and `run.py` runs them in NumPy.
+- PPO: the author's own policy. The author trained it with seed 0 for 200k steps in robot-playground-v0, the author's own repo (now archived, and not MuJoCo Playground). The checkpoint is `cart_pole_ppo.pt` at commit c67f5d8 (it entered the repo in 2650c98, sha256 `2dc28c24…f4b0`). The net is a 4-64-64-1 tanh MLP. The controller uses the mean action. `export_policy.py` writes the float32 weights to `policy.npz`, and `run.py` runs them in NumPy.
 - PPO training setup (from robot-playground-v0): reward 5 minus the LQR cost with Q = diag(1, 1, 10, 1) and R = 1. An episode ends at |tilt| > 0.2 rad, at |x| > 1.5 m, or at 10 s. Every episode starts from the same 5° tilt. The final action std is 0.29 N (log_std -1.242).
 - LQR: a continuous CARE on the `lab.linearize` model of the same plant, with Q = diag(1, 1, 10, 1) and R = 1. These are the weights of robot-playground-v0's LQR.
 - Both controllers run at 50 Hz (control_dt 0.02 s) and hold the action between ticks, as in robot-playground-v0.
@@ -13,13 +13,13 @@ Run: `uv run --extra dev --extra viz python experiments/cartpole_ppo/run.py` (ab
 
 ## Question
 
-1. How large a push on the pole, and how large a release tilt, can the user's PPO policy recover from? How does that compare with an LQR on the same plant?
+1. How large a push on the pole, and how large a release tilt, can the author's PPO policy recover from? How does that compare with an LQR on the same plant?
 2. With the policy fixed, what range of pole-mass error keeps the pole up for 15 s?
 3. Does the policy stay up on robot-pg's own `cartpole` plant, which it never saw?
 
 ## Prediction (recorded 2026-11-16, before any sweep)
 
-No user prediction was recorded. The prediction below is Claude's.
+No author prediction was recorded. The prediction below is Claude's.
 
 Before this prediction, Claude saw these facts and no sweep result:
 

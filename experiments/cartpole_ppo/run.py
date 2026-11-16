@@ -1,4 +1,4 @@
-"""The user's cart-pole PPO policy against an LQR on robot-playground-v0's plant.
+"""The author's cart-pole PPO policy against an LQR on robot-playground-v0's plant.
 
 uv run --extra dev --extra viz python experiments/cartpole_ppo/run.py
 

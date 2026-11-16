@@ -9,7 +9,7 @@ The existing DLS `Reach` block sends joint position targets to the Panda positio
 
 ## Prediction (recorded 2026-10-17, before any run)
 
-- The user: tracking fails at 25% of the torque limit and at 60 ms of latency.
+- The author: tracking fails at 25% of the torque limit and at 60 ms of latency.
 - Claude: tracking fails at 30–40% of the torque limit, when the shoulder can no longer hold the arm against gravity, and at 40–80 ms of latency.
 
 ## Method
@@ -25,7 +25,7 @@ The existing DLS `Reach` block sends joint position targets to the Panda positio
 
 ![limits](limits.png)
 
-| Limit (5 seeds) | Sim, median (range) | The user | Claude |
+| Limit (5 seeds) | Sim, median (range) | The author | Claude |
 |---|---|---|---|
 | Torque, hand within 1 cm | 0.51 (0.34–0.62) | 0.25 | 0.30–0.40 |
 | Torque, hand within 1 cm and no arm joint on its stop | 0.96 (0.88–1.00), 4 of 5 seeds | | |

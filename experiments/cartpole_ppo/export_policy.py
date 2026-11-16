@@ -1,4 +1,4 @@
-"""Export the user's cart-pole PPO checkpoint to policy.npz for the NumPy port.
+"""Export the author's cart-pole PPO checkpoint to policy.npz for the NumPy port.
 
 Run it inside the robot-playground-v0 checkout, with its rl extra:
 
